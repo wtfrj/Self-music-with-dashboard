@@ -1,0 +1,18 @@
+{
+  "token": "token",
+  "prefix": "$",
+  "allowed": [],
+  "dashboard_password": "root",
+  "dashboard_port": 5000,
+  "dashboard_host": "0.0.0.0",
+  "lavalink_uri": "http://lavalink.jirayu.net:13592",
+  "lavalink_password": "youshallnotpass",
+  "bot_status": "MADE BY wtfrj",
+  "bot_status_type": "listening",
+  "bot_activity_name": "MADE BY RJ",
+  "max_queue_size": 100,
+  "default_volume": 80,
+  "auto_leave_empty": true,
+  "auto_leave_timeout": 300,
+  "search_results_limit": 5
+}

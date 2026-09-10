@@ -1,0 +1,8 @@
+.play <song name or url> (alias: .p) - Joins your voice channel and plays the song.
+.stop (alias: .s) - Stops the music and leaves the channel.
+.skip (alias: .sk) - Skips the currently playing song.
+.queue (alias: .q) - Displays the current music queue.
+.loop (alias: .l) - Toggles queue looping.
+.volume <0-100> (alias: .v, .vol) - Sets the music volume.
+.clear (alias: .c) - Clears the queue.
+.join (alias: .j) - Makes the bot join your current voice channel.
