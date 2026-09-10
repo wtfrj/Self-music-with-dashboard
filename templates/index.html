@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADE BY RJ</title>
+  <meta name="description" content="Self Music Bot Control Dashboard — Professional music bot dashboard by wtfrj">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1.0.2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- ════════ NOTIFICATION CONTAINER ════════ -->
+<div id="notif-container"></div>
+
+<div class="dash-wrap">
+
+  <!-- ════════════════ SIDEBAR ════════════════ -->
+  <aside class="sidebar">
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="fas fa-music"></i></div>
+      <div class="logo-text">
+        <span>Self Music</span>
+        <small>Developer: RJ</small>
+      </div>
+    </div>
+
+    <!-- WS Status -->
+    <div class="ws-status">
+      <div class="ws-dot connecting" id="ws-dot"></div>
+      <span id="ws-label">Connecting...</span>
+    </div>
+
+    <!-- Navigation -->
+    <p class="nav-section-label">Navigation</p>
+    <a class="nav-link active" id="nav-home" onclick="showView('home')" href="#">
+      <i class="fas fa-home"></i> Home
+    </a>
+    <a class="nav-link" id="nav-queue" onclick="showView('queue')" href="#">
+      <i class="fas fa-list-music"></i> Queue
+    </a>
+    <a class="nav-link" id="nav-stats" onclick="showView('stats')" href="#">
+      <i class="fas fa-chart-bar"></i> Stats
+    </a>
+
+    <p class="nav-section-label">Bot Control</p>
+    <a class="nav-link" id="nav-vc" onclick="showView('vc')" href="#">
+      <i class="fas fa-headphones"></i> Join VC
+    </a>
+    <a class="nav-link" id="nav-servers" onclick="showView('servers')" href="#">
+      <i class="fas fa-server"></i> Servers
+    </a>
+    <a class="nav-link" id="nav-commands" onclick="showView('commands')" href="#">
+      <i class="fas fa-terminal"></i> Commands
+    </a>
+
+    <p class="nav-section-label">Account</p>
+    <a class="nav-link" href="/logout">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+
+    <!-- Joined Servers List -->
+    <p class="nav-section-label" style="margin-top:0.5rem">Joined Servers</p>
+    <div class="sidebar-servers-wrap" id="sidebar-servers">
+      <div class="server-item-sm">
+        <span style="color:var(--text-muted);font-size:0.8rem">Loading...</span>
+      </div>
+    </div>
+
+    <!-- User profile -->
+    <div class="sidebar-user">
+      <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Bot Avatar" id="user-avatar">
+      <div class="user-info">
+        <div class="user-name" id="user-name">Loading...</div>
+        <div class="user-tag">MADE BY RJ</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════════════════ MAIN ════════════════ -->
+  <main class="main-content">
+
+    <!-- ══════════ HOME VIEW ══════════ -->
+    <section class="view active" id="view-home">
+      <div class="top-bar">
+        <h1 class="page-title"><span>Now</span> Playing</h1>
+        <div id="loop-indicator" style="display:none;font-size:0.8rem;color:var(--sky);display:flex;align-items:center;gap:0.4rem">
+          <i class="fas fa-redo"></i> <span>Loop ON</span>
+        </div>
+      </div>
+
+      <div class="home-grid">
+
+        <!-- Now Playing Card -->
+        <div class="now-playing-card glass">
+          <div class="card-title"><i class="fas fa-compact-disc"></i> Now Playing</div>
+
+          <div class="player-art-wrap">
+            <div class="disc-container">
+              <div class="disc-ring" id="disc-ring"></div>
+              <img id="song-thumbnail" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110' viewBox='0 0 110 110'%3E%3Crect width='100%25' height='100%25' fill='%23060d14' rx='14'/%3E%3Ccircle cx='55' cy='55' r='36' fill='%23020509' stroke='%2300AEEF' stroke-width='2' stroke-dasharray='4 2'/%3E%3Cpath d='M48 38v30c-2-1.5-5-2-8-1-4 1.5-6 5.5-5 9s4 5.5 8 4c4-1.5 6-5.5 5-9V48l18-4v20c-2-1.5-5-2-8-1-4 1.5-6 5.5-5 9s4 5.5 8 4c4-1.5 6-5.5 5-9V38z' fill='%2300AEEF'/%3E%3C/svg%3E" alt="Album Art">
+            </div>
+            <div class="track-meta">
+              <div class="track-title" id="song-title">No Song Playing</div>
+              <div class="track-author" id="song-author">Queue is empty</div>
+              <a class="track-link" id="song-link" href="#" target="_blank" rel="noopener" style="display:none">
+                <i class="fas fa-external-link-alt"></i> Open link
+              </a>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-wrap">
+            <div class="progress-track" id="progress-track">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="time-row">
+              <span id="time-current">0:00</span>
+              <span id="time-total">0:00</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="player-controls">
+            <button class="ctrl-btn" id="btn-loop" onclick="sendAction('loop')" title="Toggle Loop">
+              <i class="fas fa-redo"></i>
+            </button>
+            <button class="ctrl-btn" onclick="sendAction('stop')" title="Stop">
+              <i class="fas fa-stop"></i>
+            </button>
+            <button class="ctrl-btn-main" id="btn-playpause" onclick="sendAction('play_pause')" title="Play / Pause">
+              <i class="fas fa-play" id="play-icon"></i>
+            </button>
+            <button class="ctrl-btn" onclick="sendAction('skip')" title="Skip">
+              <i class="fas fa-step-forward"></i>
+            </button>
+            <button class="ctrl-btn" onclick="openView('queue')" title="Queue">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+
+          <!-- Volume -->
+          <div class="volume-row">
+            <i class="fas fa-volume-down"></i>
+            <input type="range" min="0" max="100" value="80" class="vol-slider" id="vol-slider" oninput="setVolume(this.value)">
+            <i class="fas fa-volume-up"></i>
+          </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="side-panel">
+
+          <!-- Play Music Card -->
+          <div class="card glass play-card">
+            <div class="card-title"><i class="fas fa-search"></i> Play Music</div>
+            <div class="search-row">
+              <input type="text" id="search-input" placeholder="Song name or YouTube / Spotify URL..." autocomplete="off" onkeydown="if(event.key==='Enter')playSong()">
+              <button class="btn-play-song" onclick="playSong()" id="btn-play-song">
+                <i class="fas fa-play"></i> Play
+              </button>
+            </div>
+            <div class="search-results" id="search-results"></div>
+          </div>
+
+          <!-- Active Server Card -->
+          <div class="card glass">
+            <div class="card-title"><i class="fas fa-broadcast-tower"></i> Active Server</div>
+            <div class="server-display" id="server-display">
+              <img src="https://via.placeholder.com/44/020509/00AEEF?text=S" alt="Server Icon" id="server-icon">
+              <div class="sd-info">
+                <h3 id="server-name">Not in a VC</h3>
+                <p id="server-channel">-</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ QUEUE VIEW ══════════ -->
+    <section class="view" id="view-queue">
+      <div class="top-bar">
+        <h1 class="page-title"><span>Music</span> Queue</h1>
+        <div style="display:flex;gap:0.6rem;align-items:center">
+          <span class="queue-count" id="queue-count">0 songs</span>
+          <button class="btn-danger" onclick="sendAction('clear_queue')" style="padding:0.5rem 1rem;font-size:0.82rem">
+            <i class="fas fa-trash"></i> Clear All
+          </button>
+        </div>
+      </div>
+
+      <div class="card glass" style="padding:1.5rem">
+        <div class="queue-list" id="queue-list">
+          <div class="empty-state">
+            <i class="fas fa-music"></i>
+            <p>Queue is empty. Play a song to get started!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ STATS VIEW ══════════ -->
+    <section class="view" id="view-stats">
+      <div class="top-bar">
+        <h1 class="page-title">Bot <span>Stats</span></h1>
+        <button class="btn-secondary" onclick="loadStats()" style="padding:0.5rem 1rem;font-size:0.82rem">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card glass">
+          <i class="fas fa-clock stat-icon"></i>
+          <div class="stat-val" id="stat-uptime">--:--:--</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-server stat-icon"></i>
+          <div class="stat-val" id="stat-guilds">-</div>
+          <div class="stat-label">Servers</div>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-headphones stat-icon"></i>
+          <div class="stat-val" id="stat-vc">-</div>
+          <div class="stat-label">VC Connections</div>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-music stat-icon"></i>
+          <div class="stat-val" id="stat-songs">-</div>
+          <div class="stat-label">Songs Played</div>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-wifi stat-icon"></i>
+          <div class="stat-val" id="stat-ping">-</div>
+          <div class="stat-label">Ping (ms)</div>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-plug stat-icon"></i>
+          <div class="stat-val" id="stat-ws">-</div>
+          <div class="stat-label">WS Clients</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════ VC JOINER VIEW ══════════ -->
+    <section class="view" id="view-vc">
+      <div class="top-bar">
+        <h1 class="page-title">Join <span>Voice Channel</span></h1>
+      </div>
+
+      <div class="vc-grid">
+        <!-- By Server + Channel -->
+        <div class="card glass">
+          <div class="card-title"><i class="fas fa-list"></i> Select from Servers</div>
+
+          <div class="form-group">
+            <label for="vc-server-select">Server</label>
+            <select id="vc-server-select" onchange="populateVCChannels()">
+              <option value="">-- Select a Server --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="vc-channel-select">Voice Channel</label>
+            <select id="vc-channel-select">
+              <option value="">-- Select a Server First --</option>
+            </select>
+          </div>
+
+          <button class="btn-primary" onclick="joinVCFromDropdown()" id="btn-joinvc-dropdown">
+            <i class="fas fa-headphones"></i> Join VC
+          </button>
+        </div>
+
+        <!-- By Channel ID -->
+        <div class="card glass">
+          <div class="card-title"><i class="fas fa-hashtag"></i> Join by Channel ID</div>
+          <div class="form-group">
+            <label for="vc-channel-id-input">Channel ID</label>
+            <input type="text" id="vc-channel-id-input" placeholder="e.g. 1234567890123456789" onkeydown="if(event.key==='Enter')joinVCById()">
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">
+            Right-click a voice channel in Discord (Developer Mode) to copy its ID.
+          </p>
+          <button class="btn-primary" onclick="joinVCById()" id="btn-joinvc-id">
+            <i class="fas fa-plug"></i> Join by ID
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ SERVERS VIEW ════════ -->
+    <section class="view" id="view-servers">
+      <div class="top-bar">
+        <h1 class="page-title">Server <span>Manager</span></h1>
+      </div>
+
+      <!-- Join Server by Invite -->
+      <div class="card glass" style="padding:1.5rem;margin-bottom:1.5rem">
+        <div class="card-title" style="margin-bottom:1rem"><i class="fas fa-link"></i> Join New Server</div>
+        <div style="display:flex;gap:0.6rem;align-items:flex-end;flex-wrap:wrap">
+          <div class="form-group" style="flex:1;min-width:200px;margin-bottom:0">
+            <label for="invite-input">Discord Invite Link</label>
+            <input type="text" id="invite-input" placeholder="https://discord.gg/....." onkeydown="if(event.key==='Enter')joinServer()">
+          </div>
+          <button class="btn-primary" onclick="joinServer()" id="btn-join-server">
+            <i class="fas fa-plus"></i> Join Server
+          </button>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.75rem">
+          <i class="fas fa-info-circle"></i>Maybee <b>Not Work</b> Properly Due to Discord Captcha System (<code>⚠</code>).
+        </p>
+      </div>
+
+      <!-- All Servers Grid -->
+      <div class="card-title" style="margin-bottom:0.75rem;padding:0 0.25rem">
+        <i class="fas fa-server"></i>
+        <span>All Joined Servers (<span id="total-servers">0</span>)</span>
+      </div>
+      <div class="servers-grid" id="servers-grid">
+        <div class="empty-state" style="grid-column:1/-1">
+          <i class="fas fa-server"></i>
+          <p>No servers found.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ COMMANDS VIEW ════════ -->
+    <section class="view" id="view-commands">
+      <div class="top-bar">
+        <h1 class="page-title">Bot <span>Commands</span></h1>
+        <div style="font-size:0.82rem;color:var(--text-muted)">Prefix: <code id="cmd-prefix" style="color:var(--sky);background:rgba(0,174,239,0.12);padding:2px 8px;border-radius:4px">$</code></div>
+      </div>
+
+      <div class="commands-grid">
+
+        <!-- Music Playback -->
+        <div class="card glass cmd-category">
+          <div class="cmd-cat-header"><i class="fas fa-play-circle"></i> Music Playback</div>
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>play &lt;song/URL&gt;</div>
+              <div class="cmd-aliases">Aliases: <code>$p</code></div>
+              <div class="cmd-desc">Joins your voice channel and plays the song. Supports YouTube &amp; Spotify links.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>skip</div>
+              <div class="cmd-aliases">Aliases: <code>$sk</code></div>
+              <div class="cmd-desc">Skips the currently playing song and plays the next one in queue.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>pause</div>
+              <div class="cmd-aliases">Aliases: <code>$pa</code></div>
+              <div class="cmd-desc">Pauses the currently playing song.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>resume</div>
+              <div class="cmd-aliases">Aliases: <code>$r</code>, <code>$res</code></div>
+              <div class="cmd-desc">Resumes a paused song.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>stop</div>
+              <div class="cmd-aliases">Aliases: <code>$s</code></div>
+              <div class="cmd-desc">Stops music playback and disconnects the bot from the voice channel.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>nowplaying</div>
+              <div class="cmd-aliases">Aliases: <code>$np</code>, <code>$now</code></div>
+              <div class="cmd-desc">Shows the currently playing song with a progress bar.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Queue Management -->
+        <div class="card glass cmd-category">
+          <div class="cmd-cat-header"><i class="fas fa-list-music"></i> Queue Management</div>
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>queue</div>
+              <div class="cmd-aliases">Aliases: <code>$q</code></div>
+              <div class="cmd-desc">Displays the current music queue with up to 10 songs.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>clear</div>
+              <div class="cmd-aliases">Aliases: <code>$c</code></div>
+              <div class="cmd-desc">Clears all songs from the queue.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>loop</div>
+              <div class="cmd-aliases">Aliases: <code>$l</code></div>
+              <div class="cmd-desc">Toggles loop mode for the current song.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voice Channel -->
+        <div class="card glass cmd-category">
+          <div class="cmd-cat-header"><i class="fas fa-headphones"></i> Voice Channel</div>
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>join</div>
+              <div class="cmd-aliases">Aliases: <code>$j</code></div>
+              <div class="cmd-desc">Makes the bot join your current voice channel.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name"><span class="cmd-prefix-badge">$</span>volume &lt;0-100&gt;</div>
+              <div class="cmd-aliases">Aliases: <code>$v</code>, <code>$vol</code></div>
+              <div class="cmd-desc">Sets the music volume. Value must be between 0 and 100.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tips card -->
+        <div class="card glass cmd-category cmd-tips">
+          <div class="cmd-cat-header"><i class="fas fa-lightbulb"></i> Tips</div>
+          <div class="cmd-list">
+            <div class="cmd-item">
+              <div class="cmd-name" style="color:var(--sky)"><i class="fas fa-info-circle"></i> YouTube &amp; Spotify</div>
+              <div class="cmd-desc">Use <code>$play &lt;song name&gt;</code> for YouTube search or paste a full Spotify/YouTube URL directly.</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name" style="color:var(--sky)"><i class="fas fa-info-circle"></i> Dashboard Controls</div>
+              <div class="cmd-desc">All playback controls are also available in this dashboard — no need to type commands in Discord!</div>
+            </div>
+            <div class="cmd-item">
+              <div class="cmd-name" style="color:var(--sky)"><i class="fas fa-info-circle"></i> Default Prefix</div>
+              <div class="cmd-desc">The default prefix is <code>$</code>. You can change it in <code>config.json</code> under the <code>prefix</code> field.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}?v=1.0.2"></script>
+</body>
+</html>

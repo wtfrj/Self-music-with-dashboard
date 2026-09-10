@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <meta name="description" content="Self Music Bot Dashboard Login — MADE BY RJ">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1.0.2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="login-body">
+  <div class="login-wrap">
+    <div class="login-card glass">
+
+      <div class="login-logo">
+        <div class="icon-ring">
+          <i class="fas fa-music"></i>
+        </div>
+        <h1>Self Music</h1>
+        <p>MADE BY RJ</p>
+      </div>
+
+      {% if error %}
+      <div class="login-error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <form method="POST" action="/login">
+        <div class="field-wrap">
+          <i class="fas fa-lock f-icon"></i>
+          <input
+            id="password-input"
+            type="password"
+            name="password"
+            placeholder=".subhan.exe"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn-login" id="login-btn">
+          <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+        </button>
+      </form>
+
+      <p class="login-footer">https://github.com/wtfrj</p>
+    </div>
+  </div>
+</body>
+</html>
